@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public class VectorDouble : MonoBehaviour
+public class VectorDouble
 {
     public double x;
     public double y;
