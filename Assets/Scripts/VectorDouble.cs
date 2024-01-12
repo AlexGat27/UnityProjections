@@ -40,4 +40,8 @@ public class VectorDouble
     {
         return new VectorDouble(vec1.x - a, vec1.y - a);
     }
+    public override string ToString()
+    {
+        return $"({x},{y})";
+    }
 }

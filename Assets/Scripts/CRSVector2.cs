@@ -1,3 +1,4 @@
+using System.Numerics;
 using UnityEngine;
 
 public class CRSVector2
@@ -6,7 +7,8 @@ public class CRSVector2
 
     public string ObjectName 
     { 
-        get { 
+        get 
+        { 
             return _objectName; 
         } 
     }
@@ -15,6 +17,11 @@ public class CRSVector2
         get
         {
             return _crs3857;
+        }
+        set
+        {
+            _crs4326 = Epsg3857To4326(value);
+            _crs3857 = value;
         }
     }
     public VectorDouble Crs4326
@@ -40,12 +47,12 @@ public class CRSVector2
     {
         _objectName = objectName;
         _crs3857 = crs3857;
-        _crs4326 = Epsg3857To4326(_crs4326);
+        _crs4326 = Epsg3857To4326(_crs3857);
     }
 
-    public string ToString()
+    public override string ToString()
     {
-        return string.Format("{0} crs3857 = ( {1}, {2} )", this._objectName, _crs3857.x, _crs3857.y) +
-        "\n" + string.Format("{0} crs4326 = ( {1}, {2} )", this._objectName, _crs4326.x, _crs4326.y);
+        return string.Format("{0} crs3857 = ( {1}, {2} )", _objectName, _crs3857.x, _crs3857.y) +
+        "\n" + string.Format("{0} crs4326 = ( {1}, {2} )", _objectName, _crs4326.x, _crs4326.y);
     }
 }
