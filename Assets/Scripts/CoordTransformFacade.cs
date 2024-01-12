@@ -5,30 +5,21 @@ public class CoordTransformFacade: MonoBehaviour
 {
 
     [SerializeField] private Camera cam;
-    private Transform camTransform;
-    private CRSVector2 coordsCam;
-    private VectorDouble camResolution;
-    [SerializeField] private double camHeight;
-    [SerializeField] private double azimut;
-    private ScreenshotCapture screenshotCapture;
+
+    private Transform _camTransform;
+    private CRSVector2 _coordsCamXY;
+    private VectorDouble _camResolution;
+    private ScreenshotCapture _screenshotCapture;
 
     public void Start()
     {
-        camResolution = new VectorDouble(Screen.width, Screen.height);
-        camTransform = cam.GetComponent<Transform>();
-        coordsCam = new CRSVector2("Camera");
-        screenshotCapture = GetComponent<ScreenshotCapture>();
-    }
-    public void Update()
-    {
-        azimut = camTransform.rotation.y * Mathf.PI / 180;
-        camHeight = camTransform.position.y;
-        coordsCam.crs3857 = new VectorDouble(camTransform.position.x, camTransform.position.z);
-        coordsCam.crs4326 = coordsCam.epsg3857To4326();
+        _camResolution = new VectorDouble(Screen.width, Screen.height);
+        _camTransform = cam.GetComponent<Transform>();
+        _screenshotCapture = GetComponent<ScreenshotCapture>();
     }
     public void sendScreenshot()
     {
-        screenshotCapture.CaptureAndSendScreenshot(convertCoordsFromImage);
+        _screenshotCapture.CaptureAndSendScreenshot(convertCoordsFromImage);
     }
     private VectorDouble vectorWithAzimut(VectorDouble vec, double azimut)
     {
@@ -38,15 +29,16 @@ public class CoordTransformFacade: MonoBehaviour
     }
     private void convertCoordsFromImage(VectorDouble[] itemsImagePos)
     {
-        coordsCam.displayVectorCRS();
+        double azimut = _camTransform.rotation.y * Mathf.PI / 180;
+        double camHeight = _camTransform.position.y;
+        _coordsCamXY = new CRSVector2("Camera", new VectorDouble(_camTransform.position.x, _camTransform.position.z));
+        Debug.Log(_coordsCamXY.ToString());
         for (int i = 0; i < itemsImagePos.Length; i++)
         {
-            CRSVector2 coordsItem = new CRSVector2("Item_" + i.ToString());
-            coordsItem.crs3857 = new VectorDouble(itemsImagePos[i].x / (camResolution.y / 2), -itemsImagePos[i].y / (camResolution.y / 2));
-            coordsItem.crs3857 = vectorWithAzimut(coordsItem.crs3857, azimut);
-            coordsItem.crs3857 = coordsItem.crs3857 * camHeight + coordsCam.crs3857;
-            coordsItem.crs4326 = coordsItem.epsg3857To4326();
-            coordsItem.displayVectorCRS();
+            CRSVector2 coordsItem = new CRSVector2("Item_" + i.ToString(),
+                vectorWithAzimut(new VectorDouble(itemsImagePos[i].x / (_camResolution.y / 2), -itemsImagePos[i].y / (_camResolution.y / 2)), azimut)
+                * camHeight + _coordsCamXY.Crs3857);
+            Debug.Log(coordsItem.ToString());
         }
     }
 }
