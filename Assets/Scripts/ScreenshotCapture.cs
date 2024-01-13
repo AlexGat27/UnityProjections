@@ -11,7 +11,9 @@ public class ScreenshotCapture: MonoBehaviour
     public string ScreenshotPath = "Assets/Screenshots/";
 
     private Camera camera;
-
+    private Transform cameraTransform;
+    int resWidth;
+    int resHeight;
 
     // Запускает процесс захвата скриншота и отправки на Python
     public void CaptureAndSendScreenshot(Action<VectorDouble[]> callback)
@@ -21,28 +23,14 @@ public class ScreenshotCapture: MonoBehaviour
     private void Start()
     {
         camera = GetComponent<Camera>();
+        cameraTransform = GetComponent<Transform>();
+        resWidth = Screen.width;
+        resHeight = Screen.height;
     }
 
     // Корутина для захвата скриншота
     private byte[] CaptureScreenshot()
     {
-        // Создаем текстуру
-        //Texture2D screenshotTexture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-        //// Чтение данных из камеры в текстуру
-        //screenshotTexture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-        //screenshotTexture.Apply();
-
-        //// Конвертация текстуры в массив байтов
-        //byte[] screenshotBytes = screenshotTexture.EncodeToPNG();
-
-        //// Сохранение скриншота (если нужно)
-        //int lenghtListScreenshots = new DirectoryInfo(ScreenshotPath).GetFiles().Length;
-        //string screenshotFilename = "screenshot" + lenghtListScreenshots.ToString() + ".png";
-        //File.WriteAllBytes(Path.Combine(ScreenshotPath, screenshotFilename), screenshotBytes);
-
-        int resWidth = Screen.width;
-        int resHeight = Screen.height;
-
         RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
         camera.targetTexture = rt;
         Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
@@ -68,10 +56,19 @@ public class ScreenshotCapture: MonoBehaviour
         string pythonScriptURL = "http://localhost:5000/imageProcessing";
 
         // Используйте UnityWebRequest для отправки данных на сервер
-        UnityWebRequest www = new UnityWebRequest(pythonScriptURL, "POST");
-        www.uploadHandler = (UploadHandler)new UploadHandlerRaw(screenshotBytes);
-        www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-        www.SetRequestHeader("Content-Type", "image/png");
+        // Формируем форму для отправки данных
+        WWWForm form = new WWWForm();
+        form.AddBinaryData("image", screenshotBytes, "screenshot.png", "image/png");
+        form.AddField("fieldOfView", camera.fieldOfView.ToString());
+        form.AddField("cameraHeight", cameraTransform.position.y.ToString());
+        form.AddField("cameraAzimut", cameraTransform.rotation.y.ToString());
+        form.AddField("cameraX", cameraTransform.position.x.ToString());
+        form.AddField("cameraY", cameraTransform.position.z.ToString());
+        form.AddField("screenWidth", resWidth.ToString());
+        form.AddField("screenHeight", resHeight.ToString());
+
+        // Отправляем POST-запрос на Python-сервер
+        UnityWebRequest www = UnityWebRequest.Post(pythonScriptURL, form);
 
         // Ожидание ответа от сервера
         yield return www.SendWebRequest();
