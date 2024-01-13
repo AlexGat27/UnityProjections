@@ -18,11 +18,6 @@ public class CRSVector2
         {
             return _crs3857;
         }
-        set
-        {
-            _crs4326 = Epsg3857To4326(value);
-            _crs3857 = value;
-        }
     }
     public VectorDouble Crs4326
     {
