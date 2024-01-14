@@ -16,9 +16,9 @@ public class ScreenshotCapture: MonoBehaviour
     int resHeight;
 
     // Запускает процесс захвата скриншота и отправки на Python
-    public void CaptureAndSendScreenshot(Action<VectorDouble[]> callback)
+    public void CaptureAndSendScreenshot()
     {
-        StartCoroutine(SendScreenshotToPython(CaptureScreenshot(), callback));
+        StartCoroutine(SendScreenshotToPython(CaptureScreenshot()));
     }
     private void Start()
     {
@@ -50,7 +50,7 @@ public class ScreenshotCapture: MonoBehaviour
     }
 
     // Корутина для отправки скриншота на Python-скрипт
-    private IEnumerator SendScreenshotToPython(byte[] screenshotBytes, Action<VectorDouble[]> callback)
+    private IEnumerator SendScreenshotToPython(byte[] screenshotBytes)
     {
         // Пример URL-адреса вашего Python-скрипта (замените его своим)
         string pythonScriptURL = "http://localhost:5000/imageProcessing";
@@ -66,11 +66,9 @@ public class ScreenshotCapture: MonoBehaviour
         form.AddField("cameraY", cameraTransform.position.z.ToString());
         form.AddField("screenWidth", resWidth.ToString());
         form.AddField("screenHeight", resHeight.ToString());
+        print(resWidth + " " + resHeight);
 
-        // Отправляем POST-запрос на Python-сервер
         UnityWebRequest www = UnityWebRequest.Post(pythonScriptURL, form);
-
-        // Ожидание ответа от сервера
         yield return www.SendWebRequest();
 
         if (www.isNetworkError || www.isHttpError)
@@ -80,10 +78,7 @@ public class ScreenshotCapture: MonoBehaviour
         else
         {
             string jsonString = www.downloadHandler.text;
-            VectorDouble[] myData = JsonConvert.DeserializeObject<VectorDouble[]>(jsonString);
-            Debug.Log("Got data from Python");
-            callback.Invoke(myData);
-            // Дополнительная обработка ответа, если необходимо
+            Debug.Log(jsonString);
         }
     }
 }
