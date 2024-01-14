@@ -522,7 +522,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 213072276}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
-<<<<<<< HEAD
 --- !u!1 &222085815
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,8 +620,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 222085815}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
-=======
->>>>>>> d2f77935595023569e31316654cfaf0a86dcfda7
 --- !u!1 &422744754
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,11 +1405,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-<<<<<<< HEAD
   serializedVersion: 2
-=======
-  serializedVersion: 3
->>>>>>> d2f77935595023569e31316654cfaf0a86dcfda7
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &1206552439
@@ -1914,7 +1907,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-<<<<<<< HEAD
     - target: {fileID: 2419712151358145651, guid: 769f1d70c9b1f00489a0595caa81626a, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -1922,11 +1914,6 @@ PrefabInstance:
     - target: {fileID: 2419712151358145651, guid: 769f1d70c9b1f00489a0595caa81626a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -20
-=======
-    - target: {fileID: 1043434031570769897, guid: 53306a6ef3bd6894d8df460d6c6f8db8, type: 3}
-      propertyPath: m_Name
-      value: pothole (1)
->>>>>>> d2f77935595023569e31316654cfaf0a86dcfda7
       objectReference: {fileID: 0}
     - target: {fileID: 1043434031570769897, guid: 53306a6ef3bd6894d8df460d6c6f8db8, type: 3}
       propertyPath: m_IsActive
@@ -1972,7 +1959,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-<<<<<<< HEAD
+
     - target: {fileID: 5373106322989054060, guid: 769f1d70c9b1f00489a0595caa81626a, type: 3}
       propertyPath: m_Name
       value: pothole
@@ -1983,26 +1970,4 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 769f1d70c9b1f00489a0595caa81626a, type: 3}
-=======
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 53306a6ef3bd6894d8df460d6c6f8db8, type: 3}
---- !u!1660057539 &9223372036854775807
-SceneRoots:
-  m_ObjectHideFlags: 0
-  m_Roots:
-  - {fileID: 534352489}
-  - {fileID: 1206552439}
-  - {fileID: 705507995}
-  - {fileID: 76163957}
-  - {fileID: 963194228}
-  - {fileID: 6126877365495322530}
-  - {fileID: 213072277}
-  - {fileID: 1395993683}
-  - {fileID: 1146457764}
-  - {fileID: 1114143938}
-  - {fileID: 141227623}
-  - {fileID: 1612643642}
->>>>>>> d2f77935595023569e31316654cfaf0a86dcfda7
+
