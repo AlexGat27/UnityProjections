@@ -4,18 +4,18 @@ using Newtonsoft.Json;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Collections.Generic;
+using static UnityEditor.FilePathAttribute;
 
 public class ScreenshotCapture: MonoBehaviour
 {
-    // Путь для сохранения скриншотов (если нужно)
-    public string ScreenshotPath = "Assets/Screenshots/";
+    [SerializeField] private string _screenshotPath = "Assets/Screenshots/";
 
     private Camera camera;
     private Transform cameraTransform;
-    int resWidth;
-    int resHeight;
+    private int resWidth;
+    private int resHeight;
 
-    // Запускает процесс захвата скриншота и отправки на Python
     public void CaptureAndSendScreenshot()
     {
         StartCoroutine(SendScreenshotToPython(CaptureScreenshot()));
@@ -28,7 +28,6 @@ public class ScreenshotCapture: MonoBehaviour
         resHeight = Screen.height;
     }
 
-    // Корутина для захвата скриншота
     private byte[] CaptureScreenshot()
     {
         RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
@@ -42,31 +41,26 @@ public class ScreenshotCapture: MonoBehaviour
         Destroy(rt);
         byte[] screenshotBytes = screenShot.EncodeToPNG();
 
-        int lenghtListScreenshots = new DirectoryInfo(ScreenshotPath).GetFiles().Length;
+        int lenghtListScreenshots = new DirectoryInfo(_screenshotPath).GetFiles().Length;
         string screenshotfilename = "screenshot" + lenghtListScreenshots.ToString() + ".png";
-        File.WriteAllBytes(Path.Combine(ScreenshotPath, screenshotfilename), screenshotBytes);
+        File.WriteAllBytes(Path.Combine(_screenshotPath, screenshotfilename), screenshotBytes);
 
         return screenshotBytes;
     }
 
-    // Корутина для отправки скриншота на Python-скрипт
     private IEnumerator SendScreenshotToPython(byte[] screenshotBytes)
     {
-        // Пример URL-адреса вашего Python-скрипта (замените его своим)
         string pythonScriptURL = "http://localhost:5000/imageProcessing";
 
-        // Используйте UnityWebRequest для отправки данных на сервер
-        // Формируем форму для отправки данных
         WWWForm form = new WWWForm();
         form.AddBinaryData("image", screenshotBytes, "screenshot.png", "image/png");
         form.AddField("fieldOfView", camera.fieldOfView.ToString());
         form.AddField("cameraHeight", cameraTransform.position.y.ToString());
-        form.AddField("cameraAzimut", cameraTransform.rotation.y.ToString());
+        form.AddField("cameraAzimut", cameraTransform.rotation.eulerAngles.y.ToString());
         form.AddField("cameraX", cameraTransform.position.x.ToString());
         form.AddField("cameraY", cameraTransform.position.z.ToString());
         form.AddField("screenWidth", resWidth.ToString());
         form.AddField("screenHeight", resHeight.ToString());
-        print(resWidth + " " + resHeight);
 
         UnityWebRequest www = UnityWebRequest.Post(pythonScriptURL, form);
         yield return www.SendWebRequest();
@@ -78,7 +72,24 @@ public class ScreenshotCapture: MonoBehaviour
         else
         {
             string jsonString = www.downloadHandler.text;
-            Debug.Log(jsonString);
+            PointCoords[] response = JsonConvert.DeserializeObject<PointCoords[]>(jsonString);
+            for (int i = 0; i < response.Length; i++)
+            {
+                CRSVector2 crsVector = new CRSVector2(
+                    "Pothole",
+                    new VectorDouble(response[i].crs3857.x, response[i].crs3857.y),
+                    new VectorDouble(response[i].crs4326.x, response[i].crs4326.y)
+                );
+                print(crsVector.ToString());
+            }
         }
     }
 }
+
+
+public class PointCoords
+{
+    public VectorDouble crs3857 { get; set; }
+    public VectorDouble crs4326 { get; set; }
+}
+
